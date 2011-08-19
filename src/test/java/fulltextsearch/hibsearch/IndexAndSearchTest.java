@@ -86,7 +86,7 @@ public class IndexAndSearchTest {
 
 	private void initHibernate() {
 		Ejb3Configuration config = new Ejb3Configuration();
-		config.configure( "hibernate-search-example", new HashMap() );
+		config.configure( "hibernate-search-example", new HashMap<Object, Object>() );
 		emf = config.buildEntityManagerFactory();
 		em = emf.createEntityManager();
 	}
@@ -132,7 +132,7 @@ public class IndexAndSearchTest {
 		FullTextEntityManager ftEm = org.hibernate.search.jpa.Search.getFullTextEntityManager( ( EntityManager ) em );
 		Analyzer customAnalyzer = ftEm.getSearchFactory().getAnalyzer( "customanalyzer" );
 		QueryParser parser = new MultiFieldQueryParser(
-				Version.LUCENE_29, bookFields,
+				Version.LUCENE_31, bookFields,
 				customAnalyzer, boostPerField
 		);
 
