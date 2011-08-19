@@ -1,4 +1,4 @@
-SET IDENTITY_INSERT AUTHOR ON
+--SET IDENTITY_INSERT AUTHOR on -- enable for mssql
 
 INSERT INTO BOOK VALUES (0, '2007-06-26', '(Theory in Practice (O''Reilly))', 'Beautiful Code: Leading Programmers Explain How They Think');
 INSERT INTO AUTHOR(id,name) VALUES (0, 'Greg Wilson');
