@@ -24,4 +24,24 @@
                       value="filesystem"/>
         </properties>
     </persistence-unit>
+    <persistence-unit name="hibernate-search-example2">
+        <properties>
+
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.connection.driver_class" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+            <property name="hibernate.connection.username" value="sa"/>
+            <property name="hibernate.connection.password" value="123456"/>
+            <property name="hibernate.connection.url" value="jdbc:sqlserver://localhost;DatabaseName=fulltext"/>
+
+            <property name="hibernate.schema" value="dbo"/>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+
+            <property name="hibernate.search.default.indexBase"
+                      value="target"/>
+			
+            <!-- optional -->
+            <property name="hibernate.search.default.directory_provider"
+                      value="filesystem"/>
+        </properties>
+    </persistence-unit>    
 </persistence>
