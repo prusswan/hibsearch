@@ -98,14 +98,7 @@
             <!--<artifactId>slf4j-log4j12</artifactId>-->
             <!--<version></version>-->
             <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <dependency>
-        	<groupId>com.microsoft.sqlserver</groupId>
-        	<artifactId>msjdbc</artifactId>
-        	<version>2.0.1803.100</version>
-        	<classifier>4</classifier>
-        	<scope>test</scope>
-        </dependency>        
+        <!--</dependency>-->      
     </dependencies>
 
     <build>
@@ -144,5 +137,23 @@
                 </plugins>
             </build>
         </profile>
+		<profile>
+			<id>mssql</id>
+			<activation>
+				<property>
+					<name>database</name>
+					<value>mssql</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.microsoft.sqlserver</groupId>
+					<artifactId>msjdbc</artifactId>
+					<version>2.0.1803.100</version>
+					<classifier>4</classifier>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>        
     </profiles>
 </project>
