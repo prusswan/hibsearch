@@ -115,7 +115,13 @@ public class IndexAndSearchTest {
 	    assertEquals( "Should find Spolsky's book", 
 	                  "Smart and Gets Things Done: Joel Spolsky's Concise Guide to Finding the Best Technical Talent", books.get( 0 ).getTitle() );
 	}
-
+	
+	@Test
+	public void testPhraseSearch() throws Exception {
+	    index();
+	    List<Book> books = search("\"in Action\"");
+	    assertEquals( "Should find two books", 2, books.size() );
+	}
 
 	private void initHibernate() {
 		Ejb3Configuration config = new Ejb3Configuration();
