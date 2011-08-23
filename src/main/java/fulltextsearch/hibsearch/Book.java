@@ -13,9 +13,11 @@ import org.apache.solr.analysis.StandardTokenizerFactory;
 
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.AnalyzerDefs;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -26,14 +28,20 @@ import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 
 @Entity
-@AnalyzerDef(name = "customanalyzer",
-		tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
-		filters = {
-				@TokenFilterDef(factory = LowerCaseFilterFactory.class),
-				@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = {
-						@Parameter(name = "language", value = "English")
-				})
-		})
+@AnalyzerDefs({
+    @AnalyzerDef(name = "customanalyzer",
+    		tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+    		filters = {
+    				@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+    				@TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = {
+    						@Parameter(name = "language", value = "English")
+    				})
+    		}
+    ),
+    @AnalyzerDef(name = "customanalyzer2",
+            tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class)
+    )
+})
 @Indexed
 public class Book {
 
@@ -56,7 +64,10 @@ public class Book {
 	public Book() {
 	}
 
-	@Field(index = Index.TOKENIZED, store = Store.YES)
+	@Fields({
+	    @Field(index = Index.TOKENIZED, store = Store.YES),
+	    @Field(name="title_sort", index=Index.TOKENIZED, analyzer=@Analyzer(definition="customanalyzer2") )	    
+	})
 	@Analyzer(definition = "customanalyzer")
 	public String getTitle() {
 		return title;

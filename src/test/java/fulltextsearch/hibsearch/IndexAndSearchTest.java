@@ -82,6 +82,27 @@ public class IndexAndSearchTest {
 		books = search( "refactoring" );
 		assertEquals( "Wrong title", "Refactoring: Improving the Design of Existing Code", books.get( 0 ).getTitle() );
 	}
+	
+	@Test
+	public void testCaseSensitiveSearch() throws Exception {
+	    index();
+	    
+	    List<Book> books = search( "Refactoring", "customanalyzer2" );
+	    assertEquals( "Should find one book", 1, books.size() );
+	    assertEquals( "Wrong title", "Refactoring: Improving the Design of Existing Code", books.get( 0 ).getTitle() );
+	    
+        books = search( "refactoring", "customanalyzer2" );
+	    assertEquals( "Should find no books", 0, books.size() );
+	    
+	    books = search( "King", "customanalyzer2" );
+	    assertEquals( "Should find no books since author is not indexed for customanalyzer2", 0, books.size() );
+	    
+        books = search( "\"Refactoring: Improving the Design of Existing Code\"", "customanalyzer2" );
+        assertEquals( "Should find one book with exact match", 1, books.size() );	 
+        
+        books = search( "\"Refactoring: Improving the design of Existing Code\"", "customanalyzer2" );
+        assertEquals( "Should find no books (design is lowercased)", 0, books.size() );              
+	}
 
 
 	private void initHibernate() {
@@ -108,7 +129,11 @@ public class IndexAndSearchTest {
 	}
 
 	private List<Book> search(String searchQuery) throws ParseException {
-		Query query = searchQuery( searchQuery );
+	    return search(searchQuery, "customanalyzer");
+	}
+	
+	private List<Book> search(String searchQuery, String analyzer) throws ParseException {
+		Query query = searchQuery( searchQuery, analyzer );
 
 		List<Book> books = query.getResultList();
 
@@ -118,9 +143,9 @@ public class IndexAndSearchTest {
 		return books;
 	}
 
-	private Query searchQuery(String searchQuery) throws ParseException {
+	private Query searchQuery(String searchQuery, String analyzer) throws ParseException {
 
-		String[] bookFields = { "title", "subtitle", "authors.name", "publicationDate" };
+		String[] bookFields = { "title", "subtitle", "authors.name", "publicationDate", "title_sort" };
 
 		//lucene part
 		Map<String, Float> boostPerField = new HashMap<String, Float>( 4 );
@@ -130,7 +155,7 @@ public class IndexAndSearchTest {
 		boostPerField.put( bookFields[3], ( float ) .5 );
 
 		FullTextEntityManager ftEm = org.hibernate.search.jpa.Search.getFullTextEntityManager( ( EntityManager ) em );
-		Analyzer customAnalyzer = ftEm.getSearchFactory().getAnalyzer( "customanalyzer" );
+		Analyzer customAnalyzer = ftEm.getSearchFactory().getAnalyzer( analyzer );
 		QueryParser parser = new MultiFieldQueryParser(
 				Version.LUCENE_31, bookFields,
 				customAnalyzer, boostPerField
