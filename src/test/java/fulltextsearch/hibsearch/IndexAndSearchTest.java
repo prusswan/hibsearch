@@ -103,6 +103,18 @@ public class IndexAndSearchTest {
         books = search( "\"Refactoring: Improving the design of Existing Code\"", "customanalyzer2" );
         assertEquals( "Should find no books (design is lowercased)", 0, books.size() );              
 	}
+	
+	@Test
+	public void testWildcardSearch() throws Exception {
+	    index();
+	    List<Book> books = search( "Cl*r", "customanalyzer2" );
+	    assertEquals( "Should find one book", 
+	                  "Clear Your Clutter with Feng Shui: Space Clearing Can Change Your Life", books.get( 0 ).getTitle() );
+	    
+	    books = search( "s*sky" );
+	    assertEquals( "Should find Spolsky's book", 
+	                  "Smart and Gets Things Done: Joel Spolsky's Concise Guide to Finding the Best Technical Talent", books.get( 0 ).getTitle() );
+	}
 
 
 	private void initHibernate() {
