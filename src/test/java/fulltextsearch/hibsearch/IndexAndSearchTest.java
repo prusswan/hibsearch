@@ -113,7 +113,9 @@ public class IndexAndSearchTest {
 	    
 	    books = search( "s*sky" );
 	    assertEquals( "Should find Spolsky's book", 
-	                  "Smart and Gets Things Done: Joel Spolsky's Concise Guide to Finding the Best Technical Talent", books.get( 0 ).getTitle() );
+	                  "Smart and Gets Things Done: Joel Spolsky's Concise Guide to Finding the Best Technical Talent, " +
+	                          "Hardback: Joel Spolsky's Concise Guide to Finding the Best Technical Talent", 
+	                  books.get( 0 ).getTitle() );
 	}
 	
 	@Test
@@ -121,6 +123,22 @@ public class IndexAndSearchTest {
 	    index();
 	    List<Book> books = search("\"in Action\"");
 	    assertEquals( "Should find two books", 2, books.size() );
+	}
+	
+	@Test
+	public void testBooleanSearch() throws Exception {
+	    index();
+	    
+	    List<Book> books = search( "+and -java", "customanalyzer2" );	    
+	    int withoutJava = books.size();   
+	    
+	    books = search( "+and +java", "customanalyzer2" );
+	    int withJava = books.size();   
+	    
+        books = search( "+and java", "customanalyzer2" );        
+        int total = books.size();  	    
+        
+        assertEquals( "subtotals should sum to total", withoutJava + withJava, total );
 	}
 
 	private void initHibernate() {
@@ -154,6 +172,8 @@ public class IndexAndSearchTest {
 		Query query = searchQuery( searchQuery, analyzer );
 
 		List<Book> books = query.getResultList();
+		
+		log.info( "Found: " + books.size() );
 
 		for ( Book b : books ) {
 			log.info( "Title: " + b.getTitle() );
