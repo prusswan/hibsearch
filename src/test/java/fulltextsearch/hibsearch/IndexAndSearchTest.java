@@ -12,7 +12,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Explanation;
 import org.apache.lucene.util.Version;
 import org.junit.After;
 import org.junit.Before;
@@ -100,13 +99,13 @@ public class IndexAndSearchTest {
         assertEquals( "Should find four books", 4, books.size() );
         
 	    books = search( "King", "customanalyzer2" );
-	    assertEquals( "Should find no books since author is not indexed for customanalyzer2", 0, books.size() );
+	    assertEquals( "Should find no books since query is not in lowercase", 0, books.size() );
 	    
         books = search( "\"Refactoring: Improving the Design of Existing Code\"", "customanalyzer2" );
         assertEquals( "Should find one book with exact match", 1, books.size() );	 
         
         books = search( "\"Refactoring: Improving the design of Existing Code\"", "customanalyzer2" );
-        assertEquals( "Should find no books (design is lowercased)", 0, books.size() );              
+        assertEquals( "Should find no books (design is lowercased)", 0, books.size() );
 	}
 	
 	@Test
@@ -186,7 +185,8 @@ public class IndexAndSearchTest {
 
 		for ( Object[] r : results ) {
 		    Book b = (Book) r[0];		    
-			log.info( "Title: " + b.getTitle() + " Score: " + r[1] );			
+			log.info( "Title: " + b.getTitle() + " Score: " + r[1] );	
+			log.info( "Explanation: " + r[2] );
 			books.add( b );
 		}
 		
@@ -215,7 +215,7 @@ public class IndexAndSearchTest {
 		luceneQuery = parser.parse( searchQuery );
 
 		final FullTextQuery query = ftEm.createFullTextQuery( luceneQuery, Book.class )
-		        .setProjection(FullTextQuery.THIS, FullTextQuery.SCORE);
+		        .setProjection(FullTextQuery.THIS, FullTextQuery.SCORE, FullTextQuery.EXPLANATION);
 		
 		return query;
 	}
