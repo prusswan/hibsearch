@@ -125,13 +125,16 @@ public class IndexAndSearchTest {
 	    index();
 	    List<Book> books = search("\"in Action\"");
 	    assertEquals( "Should find two books", 2, books.size() );
+	    
+	    search("\"Action in\"");
+        assertEquals( "Should find no books", 0, books.size() );
 	}
 	
 	@Test
 	public void testBooleanSearch() throws Exception {
 	    index();
 	    
-	    List<Book> books = search( "+and -java", "customanalyzer2" );	    
+	    List<Book> books = search( "+and -\"java\"", "customanalyzer2" );	    
 	    int withoutJava = books.size();   
 	    
 	    books = search( "+and +java", "customanalyzer2" );
