@@ -1,5 +1,6 @@
 package fulltextsearch.hibsearch;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.util.Version;
 import org.junit.After;
 import org.junit.Before;
@@ -171,13 +173,17 @@ public class IndexAndSearchTest {
 	private List<Book> search(String searchQuery, String analyzer) throws ParseException {
 		Query query = searchQuery( searchQuery, analyzer );
 
-		List<Book> books = query.getResultList();
-		
-		log.info( "Found: " + books.size() );
+		List<Object []> results = query.getResultList();
+		List<Book> books = new ArrayList<Book>( results.size() );
 
-		for ( Book b : books ) {
-			log.info( "Title: " + b.getTitle() );
+		log.info( "Found: " + results.size() );
+
+		for ( Object[] r : results ) {
+		    Book b = (Book) r[0];		    
+			log.info( "Title: " + b.getTitle() + " Score: " + r[1] );			
+			books.add( b );
 		}
+		
 		return books;
 	}
 
@@ -202,8 +208,9 @@ public class IndexAndSearchTest {
 		org.apache.lucene.search.Query luceneQuery;
 		luceneQuery = parser.parse( searchQuery );
 
-		final FullTextQuery query = ftEm.createFullTextQuery( luceneQuery, Book.class );
-
+		final FullTextQuery query = ftEm.createFullTextQuery( luceneQuery, Book.class )
+		        .setProjection(FullTextQuery.THIS, FullTextQuery.SCORE);
+		
 		return query;
 	}
 
