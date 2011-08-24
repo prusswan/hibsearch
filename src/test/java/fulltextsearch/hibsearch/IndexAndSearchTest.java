@@ -96,6 +96,9 @@ public class IndexAndSearchTest {
         books = search( "refactoring", "customanalyzer2" );
 	    assertEquals( "Should find no books", 0, books.size() );
 	    
+        books = search( "King" );
+        assertEquals( "Should find four books", 4, books.size() );
+        
 	    books = search( "King", "customanalyzer2" );
 	    assertEquals( "Should find no books since author is not indexed for customanalyzer2", 0, books.size() );
 	    
@@ -126,7 +129,7 @@ public class IndexAndSearchTest {
 	    List<Book> books = search("\"in Action\"");
 	    assertEquals( "Should find two books", 2, books.size() );
 	    
-	    search("\"Action in\"");
+	    books = search("\"Action in\"");
         assertEquals( "Should find no books", 0, books.size() );
 	}
 	
